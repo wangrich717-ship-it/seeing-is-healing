@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Fdecks\u002F[slug]","\u002Fspreads\u002F[slug]","\u002Fthemes\u002F[id]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
