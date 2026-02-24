@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:pages": "next build && node -e \"require('fs').cpSync('out', '../docs', {recursive: true})\"",
     "start": "next start",
     "lint": "eslint"
   },

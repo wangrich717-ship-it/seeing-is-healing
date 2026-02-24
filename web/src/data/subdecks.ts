@@ -65,13 +65,30 @@ export const DECK_SUBDECKS: Record<string, SubDeck[]> = {
   healheart: [
     {
       id: "main",
-      label: "疗心卡",
+      label: "疗心卡（全部）",
       images: [
         ...seq("/images/decks/healheart/cards", 1, 20, 3),
         "/images/decks/healheart/cards/21.jpg",
         ...seq("/images/decks/healheart/cards", 22, 40, 3),
         "/images/decks/healheart/cards/41.jpg",
         "/images/decks/healheart/cards/042.jpg",
+      ],
+    },
+    {
+      id: "shadow",
+      label: "阴影组（22-42）",
+      images: [
+        ...seq("/images/decks/healheart/cards", 22, 40, 3),
+        "/images/decks/healheart/cards/41.jpg",
+        "/images/decks/healheart/cards/042.jpg",
+      ],
+    },
+    {
+      id: "nurture",
+      label: "滋养组（1-21）",
+      images: [
+        ...seq("/images/decks/healheart/cards", 1, 20, 3),
+        "/images/decks/healheart/cards/21.jpg",
       ],
     },
   ],

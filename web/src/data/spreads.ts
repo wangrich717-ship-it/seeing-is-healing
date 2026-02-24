@@ -3,6 +3,8 @@ export interface SpreadPosition {
   meaning: string;
   /** 指定从哪个子套抽卡，留空则从全套混合池抽 */
   subDeckId?: string;
+  /** 指定该卡位从哪一套系抽卡；留空则使用牌阵当前选中的套系 */
+  deckSlug?: string;
 }
 
 export interface Spread {
@@ -55,7 +57,7 @@ const threeCard: Spread = {
     "第三张卡带给你什么样的可能性或启示？",
   ],
   deckSlugs: [
-    "classic","saga","tale1001","mythos","healheart","cope","habitat",
+    "classic","saga","tale1001","mythos","cope","habitat",
     "tandoo","persona","child","resilio","morena",
   ],
   introductionContent: `<p>三张卡分别代表时间轴上的三个节点。过去一张呈现根源与模式，现在一张映照当下处境，未来一张指向可能性。三张合看，往往能看见一条被遗忘的生命叙事线。</p>`,
@@ -79,7 +81,7 @@ const relationship: Spread = {
     "第三张卡——关系之间的空间——让你想到什么？",
     "你最想在这段关系里改变的是什么？",
   ],
-  deckSlugs: ["classic","tandoo","persona","child","healheart"],
+  deckSlugs: ["classic", "tandoo", "persona", "child"],
   introductionContent: `<p>关系镜像牌阵帮助我们看见关系中「我」与「他者」的动态，以及两者之间尚未言说的空间。适合探索伴侣、亲子、友谊或职场关系。</p>`,
   category: "人物与关系",
 };
@@ -177,9 +179,9 @@ const healheart3: Spread = {
   name: "心的三角牌阵",
   positionCount: 3,
   positions: [
-    { index: 0, meaning: "心的伤痛" },
-    { index: 1, meaning: "心的需要" },
-    { index: 2, meaning: "心的疗愈路径" },
+    { index: 0, meaning: "心的伤痛", subDeckId: "shadow" },
+    { index: 1, meaning: "心的需要", subDeckId: "nurture" },
+    { index: 2, meaning: "心的疗愈路径", subDeckId: "nurture" },
   ],
   recommendedQuestions: [
     "这张「伤痛」的卡，你愿意让自己感受一下吗？",
@@ -199,9 +201,9 @@ const eccoHope: Spread = {
   name: "希望之光牌阵",
   positionCount: 3,
   positions: [
-    { index: 0, meaning: "黑暗（当前困境）" },
-    { index: 1, meaning: "微光（一丝希望）" },
-    { index: 2, meaning: "光源（核心力量）" },
+    { index: 0, meaning: "黑暗（当前困境）", subDeckId: "shadow" },
+    { index: 1, meaning: "微光（一丝希望）", subDeckId: "nurture" },
+    { index: 2, meaning: "光源（核心力量）", subDeckId: "nurture" },
   ],
   recommendedQuestions: [
     "黑暗那张卡——你愿意承认的困境是什么？",
@@ -232,7 +234,7 @@ const stressResource: Spread = {
     "内在资源卡提醒你，你已经拥有什么力量？",
     "如果只能做一件事，下一步你会做什么？",
   ],
-  deckSlugs: ["resilio","cope","healheart","classic"],
+  deckSlugs: ["resilio", "cope", "classic"],
   introductionContent: `<p>压力管理专属牌阵，整合了身体感受与内在资源两个维度。前两张识别压力，后两张调动复原力，最终指向具体行动。特别适合与复原卡或应对卡搭配。</p>`,
   category: "心灵疗愈",
 };
@@ -265,10 +267,10 @@ const copeTrauma: Spread = {
   name: "创伤见证牌阵",
   positionCount: 4,
   positions: [
-    { index: 0, meaning: "创伤发生了什么" },
-    { index: 1, meaning: "我当时如何应对" },
-    { index: 2, meaning: "这件事留下了什么" },
-    { index: 3, meaning: "未来我想要什么" },
+    { index: 0, meaning: "创伤发生了什么", subDeckId: "shadow" },
+    { index: 1, meaning: "我当时如何应对", subDeckId: "shadow" },
+    { index: 2, meaning: "这件事留下了什么", subDeckId: "nurture" },
+    { index: 3, meaning: "未来我想要什么", subDeckId: "nurture" },
   ],
   recommendedQuestions: [
     "第一张卡，你愿意用这个画面说说发生了什么吗？（可以不说细节）",
@@ -344,7 +346,7 @@ const childInnerChild: Spread = {
     "作为现在的成年人，你可以给那个孩子什么？",
     "当你们重新连结，你感受到什么？",
   ],
-  deckSlugs: ["child","persona","classic","healheart"],
+  deckSlugs: ["child", "persona", "classic"],
   introductionContent: `<p>内在小孩工作专属牌阵，适合探索童年创伤、自我养育与成人自我和内在小孩的对话。孩童卡的真实面孔让这个议题更有温度与具体感。</p>`,
   category: "心灵疗愈",
 };
@@ -460,9 +462,9 @@ const classicInnerDialogue: Spread = {
   positionCount: 4,
   positions: [
     { index: 0, meaning: "内在批评者（那个苛刻的声音）" },
-    { index: 1, meaning: "内在批评者说的字（核心指责）" },
+    { index: 1, meaning: "内在批评者说的字（核心指责）", subDeckId: "word" },
     { index: 2, meaning: "内在养育者（慈悲的声音）" },
-    { index: 3, meaning: "内在养育者说的字（真实需要）" },
+    { index: 3, meaning: "内在养育者说的字（真实需要）", subDeckId: "word" },
   ],
   recommendedQuestions: [
     "批评者那张图：这个画面让你想到什么场景或什么人？",
@@ -872,9 +874,9 @@ const healheartnurture: Spread = {
   name: "滋养礼物",
   positionCount: 3,
   positions: [
-    { index: 0, meaning: "当下需要被滋养的部分" },
-    { index: 1, meaning: "滋养的方式（来自内在）" },
-    { index: 2, meaning: "滋养后，我能给予自己的礼物" },
+    { index: 0, meaning: "当下需要被滋养的部分", subDeckId: "shadow" },
+    { index: 1, meaning: "滋养的方式（来自内在）", subDeckId: "nurture" },
+    { index: 2, meaning: "滋养后，我能给予自己的礼物", subDeckId: "nurture" },
   ],
   recommendedQuestions: [
     "第一张卡：此刻的你，哪个部分最需要被温柔对待？",
@@ -1130,7 +1132,7 @@ const resilioAnimalPower: Spread = {
   name: "力量动物",
   positionCount: 3,
   positions: [
-    { index: 0, meaning: "我的力量动物（内在的野性智慧）" },
+    { index: 0, meaning: "我的力量动物（内在的野性智慧）", subDeckId: "animal" },
     { index: 1, meaning: "它带给我的礼物" },
     { index: 2, meaning: "如何在生活中运用这股力量" },
   ],
@@ -1662,6 +1664,50 @@ const tandooSignCouple: Spread = {
   category: "人物与关系",
 };
 
+const tandooPictureSignA: Spread = {
+  id: "tandoo-picture-sign-a",
+  slug: "tandoo-picture-sign-a",
+  name: "关系现状与方向",
+  positionCount: 4,
+  positions: [
+    { index: 0, meaning: "关系的当下画面", subDeckId: "couple" },
+    { index: 1, meaning: "此刻的路标（方向指引）", subDeckId: "sign" },
+    { index: 2, meaning: "阻碍或卡住的画面", subDeckId: "couple" },
+    { index: 3, meaning: "突破的路标（下一步）", subDeckId: "sign" },
+  ],
+  recommendedQuestions: [
+    "当下画面卡：这张图如何描述你们现在的关系状态？",
+    "路标卡：这个路标在关系里指向什么方向？",
+    "阻碍画面卡：什么画面代表你们卡住或难以推进的部分？",
+    "突破路标卡：如果要往前一步，这个路标在邀请你们做什么？",
+  ],
+  deckSlugs: ["tandoo"],
+  introductionContent: `<p>用伴侣卡的画面卡看见关系的「现状」与「卡点」，用路标卡看见「方向」与「下一步」。四张卡两两成对，适合想厘清关系现状并找到行动方向时使用。</p>`,
+  category: "人物与关系",
+};
+
+const tandooPictureSignB: Spread = {
+  id: "tandoo-picture-sign-b",
+  slug: "tandoo-picture-sign-b",
+  name: "伴侣心愿与行动",
+  positionCount: 4,
+  positions: [
+    { index: 0, meaning: "心中理想的关系画面", subDeckId: "couple" },
+    { index: 1, meaning: "心指引的路标", subDeckId: "sign" },
+    { index: 2, meaning: "渴望被看见的画面", subDeckId: "couple" },
+    { index: 3, meaning: "可行动的路标", subDeckId: "sign" },
+  ],
+  recommendedQuestions: [
+    "理想画面卡：你心中渴望的关系，是什么样子？",
+    "心指引路标卡：你的心在指向什么方向？",
+    "渴望画面卡：你最希望被对方看见的，是哪一种画面？",
+    "行动路标卡：如果只做一件事靠近这个渴望，路标在说什么？",
+  ],
+  deckSlugs: ["tandoo"],
+  introductionContent: `<p>画面卡呈现「心愿」与「渴望被看见」的部分，路标卡呈现「心指引的方向」与「可行动的一步」。适合在平静时刻与伴侣或独自梳理：我们真正想要什么、下一步可以怎么做。</p>`,
+  category: "人物与关系",
+};
+
 // —— 成年人像卡：人像 × 互动 ——
 const personaPortraitInteract: Spread = {
   id: "persona-portrait-interact",
@@ -1683,6 +1729,50 @@ const personaPortraitInteract: Spread = {
   ],
   deckSlugs: ["persona"],
   introductionContent: `<p>成年人像卡由「77张人像卡 + 33张互动卡」组成。人像卡呈现「我是谁」，互动卡呈现「我如何与人相处」——两套卡分别映照自我认同与关系模式。这个牌阵让两套卡成对出现，探索「现在的我」与「理想中的我」的两个维度。</p>`,
+  category: "人物与关系",
+};
+
+const personaPortraitInteractA: Spread = {
+  id: "persona-portrait-interact-a",
+  slug: "persona-portrait-interact-a",
+  name: "人像·角色与互动",
+  positionCount: 4,
+  positions: [
+    { index: 0, meaning: "我在某个角色中的样子（人像）", subDeckId: "portrait" },
+    { index: 1, meaning: "在这个角色里如何与人互动", subDeckId: "interact" },
+    { index: 2, meaning: "卸下角色后真实的样子（人像）", subDeckId: "portrait" },
+    { index: 3, meaning: "私下与亲近之人的互动", subDeckId: "interact" },
+  ],
+  recommendedQuestions: [
+    "角色人像卡：这个角色（如职场、家庭）里的你，是什么样子？",
+    "角色互动卡：在这个角色中，你通常怎么和人相处？",
+    "真实人像卡：卸下角色后，那个更真实的你是什么样的？",
+    "私下互动卡：和亲近的人在一起时，你的互动方式有什么不同？",
+  ],
+  deckSlugs: ["persona"],
+  introductionContent: `<p>用人像卡区分「角色中的我」与「真实的我」，用互动卡看见两种情境下的相处方式。适合探索社会角色与私下自我的差异、职场与亲密关系中的不同面向。</p>`,
+  category: "人物与关系",
+};
+
+const personaPortraitInteractB: Spread = {
+  id: "persona-portrait-interact-b",
+  slug: "persona-portrait-interact-b",
+  name: "人像·面具与真实",
+  positionCount: 4,
+  positions: [
+    { index: 0, meaning: "对外呈现的样子（人像）", subDeckId: "portrait" },
+    { index: 1, meaning: "对外的互动方式", subDeckId: "interact" },
+    { index: 2, meaning: "内在真实的自己（人像）", subDeckId: "portrait" },
+    { index: 3, meaning: "渴望的互动方式", subDeckId: "interact" },
+  ],
+  recommendedQuestions: [
+    "对外人像卡：你习惯对外展示的是什么样的自己？",
+    "对外互动卡：这种展示下，你和他人通常怎么互动？",
+    "内在人像卡：很少被人看见的那个内在，是什么样子？",
+    "渴望互动卡：你真正渴望的与人相处方式是什么？",
+  ],
+  deckSlugs: ["persona"],
+  introductionContent: `<p>人像卡对照「面具」与「内在真实」，互动卡对照「当下的相处」与「渴望的相处」。适合想厘清外在适应与内在需求、并看见想改变的互动模式时使用。</p>`,
   category: "人物与关系",
 };
 
@@ -1709,6 +1799,50 @@ const childPortraitAction: Spread = {
   category: "心灵疗愈",
 };
 
+const childPortraitActionA: Spread = {
+  id: "child-portrait-action-a",
+  slug: "child-portrait-action-a",
+  name: "孩子·童年与当下",
+  positionCount: 4,
+  positions: [
+    { index: 0, meaning: "童年时的样子（肖像）", subDeckId: "portrait" },
+    { index: 1, meaning: "那时的情境或经历", subDeckId: "action" },
+    { index: 2, meaning: "此刻内在孩子的样子（肖像）", subDeckId: "portrait" },
+    { index: 3, meaning: "当下可以为 ta 做的行动", subDeckId: "action" },
+  ],
+  recommendedQuestions: [
+    "童年肖像卡：这张脸让你想到几岁的自己？那时的你是什么状态？",
+    "那时情境卡：这个情境或动作，和你的童年经历有什么呼应？",
+    "此刻肖像卡：现在心里住着的那个孩子，他/她长什么样？",
+    "当下行动卡：作为成年人，你今天可以为自己心里那个孩子做哪一件事？",
+  ],
+  deckSlugs: ["child"],
+  introductionContent: `<p>用肖像卡连接「童年的我」与「此刻的内在孩子」，用行动/情况卡看见「那时的处境」与「当下可做的行动」。适合在回忆与当下之间搭桥，把看见化为具体自我照顾。</p>`,
+  category: "心灵疗愈",
+};
+
+const childPortraitActionB: Spread = {
+  id: "child-portrait-action-b",
+  slug: "child-portrait-action-b",
+  name: "孩子·渴望与满足",
+  positionCount: 4,
+  positions: [
+    { index: 0, meaning: "内在孩子渴望成为的样子（肖像）", subDeckId: "portrait" },
+    { index: 1, meaning: "渴望的情境或状态", subDeckId: "action" },
+    { index: 2, meaning: "被满足时的样子（肖像）", subDeckId: "portrait" },
+    { index: 3, meaning: "满足 ta 的具体行动", subDeckId: "action" },
+  ],
+  recommendedQuestions: [
+    "渴望肖像卡：你心里那个孩子，最想成为什么样子？",
+    "渴望情境卡：他/她最渴望处在什么样的情境里？",
+    "被满足肖像卡：当被好好爱、被看见时，那个孩子会是什么表情与姿态？",
+    "满足行动卡：你可以用哪一个具体行动，去满足那个孩子？",
+  ],
+  deckSlugs: ["child"],
+  introductionContent: `<p>肖像卡呈现内在孩子的「渴望的样子」与「被满足的样子」，行动/情况卡呈现「渴望的情境」与「可执行的满足行动」。适合把模糊的渴望具象化，并找到可做的一小步。</p>`,
+  category: "心灵疗愈",
+};
+
 // —— 土著卡：图像 × 追踪 ——
 const morenaImgTrack: Spread = {
   id: "morena-img-track",
@@ -1729,6 +1863,50 @@ const morenaImgTrack: Spread = {
   ],
   deckSlugs: ["morena"],
   introductionContent: `<p>土著卡由「88张部落生活图像 + 22张足迹追踪卡」构成。图像卡呈现「现在的风景」，追踪卡呈现「方向与足迹」。这个牌阵让两套卡交替出现，创造一次从「我在哪里」到「我去哪里」的视觉旅程。</p>`,
+  category: "自然与生活",
+};
+
+const morenaImgTrackA: Spread = {
+  id: "morena-img-track-a",
+  slug: "morena-img-track-a",
+  name: "根与足迹",
+  positionCount: 4,
+  positions: [
+    { index: 0, meaning: "我的根（来自哪里的画面）", subDeckId: "img" },
+    { index: 1, meaning: "足迹：我一直在追寻什么", subDeckId: "track" },
+    { index: 2, meaning: "当下扎根的画面", subDeckId: "img" },
+    { index: 3, meaning: "足迹：下一步要走向哪里", subDeckId: "track" },
+  ],
+  recommendedQuestions: [
+    "根的画面卡：这张图像如何描述你的来源或归属？",
+    "追寻足迹卡：这个足迹符号在说你在追寻什么？",
+    "扎根画面卡：此刻你「站稳」的地方，是什么风景？",
+    "下一步足迹卡：你的下一个脚印，想落在哪里？",
+  ],
+  deckSlugs: ["morena"],
+  introductionContent: `<p>用图像卡看见「根」与「当下扎根之处」，用追踪卡看见「一直在追寻的」与「下一步方向」。适合探索归属感、生命方向与从根源到前行的完整脉络。</p>`,
+  category: "自然与生活",
+};
+
+const morenaImgTrackB: Spread = {
+  id: "morena-img-track-b",
+  slug: "morena-img-track-b",
+  name: "自然与追寻",
+  positionCount: 4,
+  positions: [
+    { index: 0, meaning: "我在自然中的样子（图像）", subDeckId: "img" },
+    { index: 1, meaning: "追踪：心指引的方向", subDeckId: "track" },
+    { index: 2, meaning: "内心向往的风景（图像）", subDeckId: "img" },
+    { index: 3, meaning: "追踪：通往那里的足迹", subDeckId: "track" },
+  ],
+  recommendedQuestions: [
+    "自然中的我卡：这张部落/自然画面里，你看见自己在什么位置？",
+    "心指引足迹卡：这个足迹在指向什么方向？",
+    "向往风景卡：你内心真正向往的，是怎样的自然或生活画面？",
+    "通往那里的足迹卡：从当下到那份向往，你的下一步足迹是什么？",
+  ],
+  deckSlugs: ["morena"],
+  introductionContent: `<p>图像卡呈现「在自然中的我」与「内心向往的风景」，追踪卡呈现「心指引的方向」与「可走的足迹」。适合在自然意象中厘清内心向往与具体方向。</p>`,
   category: "自然与生活",
 };
 
@@ -1761,21 +1939,23 @@ const familyTree: Spread = {
   id: "family-tree",
   slug: "family-tree",
   name: "家族树牌阵",
-  positionCount: 4,
+  positionCount: 5,
   positions: [
-    { index: 0, meaning: "父亲（或父系代表）" },
-    { index: 1, meaning: "母亲（或母系代表）" },
-    { index: 2, meaning: "自己" },
-    { index: 3, meaning: "家族传承的礼物 / 需要放下的包袱" },
+    { index: 0, meaning: "父亲（或父系代表）", deckSlug: "persona" },
+    { index: 1, meaning: "母亲（或母系代表）", deckSlug: "persona" },
+    { index: 2, meaning: "自己", deckSlug: "child" },
+    { index: 3, meaning: "传承的礼物", deckSlug: "classic" },
+    { index: 4, meaning: "放下的包袱", deckSlug: "classic" },
   ],
   recommendedQuestions: [
     "父亲卡：这张卡如何呈现父亲对你的影响？",
     "母亲卡：母亲卡呈现的是什么？",
     "自己卡：在家族脉络中，你看见自己处于什么位置？",
-    "传承卡：这是家族给你的礼物，还是需要放下的包袱？你最想从家庭模式中「解放」出来的是什么？",
+    "传承的礼物：家族给你的礼物是什么？",
+    "放下的包袱：你最想从家庭模式中「解放」出来的是什么？",
   ],
-  deckSlugs: ["persona", "child", "tandoo", "classic"],
-  introductionContent: `<p>家族树牌阵帮助探索原生家庭模式对当下的影响，打破代际循环，实现自我和解。分别抽取代表父亲、母亲、自己的卡牌，再抽一张卡代表「家族传承的礼物」或「需要放下的包袱」，直观看见代际传承与和解方向。</p>`,
+  deckSlugs: ["persona", "child", "classic"],
+  introductionContent: `<p>家族树牌阵帮助探索原生家庭模式对当下的影响，打破代际循环，实现自我和解。父亲、母亲用成年人像卡，自己用孩童卡，传承的礼物与放下的包袱各抽一张经典 OH 卡，直观看见代际传承与和解方向。</p>`,
   category: "人物与关系",
 };
 
@@ -1836,7 +2016,7 @@ const energyField: Spread = {
     "关系卡：这些关系或环境离你太近（边界被侵犯）还是太远（需要连接）？",
     "整体：你的能量场中，哪些关系在滋养你？哪些在消耗你？",
   ],
-  deckSlugs: ["tandoo", "cope", "habitat", "healheart"],
+  deckSlugs: ["tandoo", "cope", "habitat"],
   introductionContent: `<p>能量场牌阵帮助识别能量损耗源，建立健康的心理边界。中心放一张代表自己的卡，四周抽取卡牌代表不同的人际关系或环境，直观看到哪些关系离自己太近（边界被侵犯），哪些太远（需要连接）。</p>`,
   category: "心灵疗愈",
 };
@@ -1943,16 +2123,24 @@ export const SPREADS: Spread[] = [
   tandooLoveLanguage,
   tandooConflict,
   tandooSignCouple,
+  tandooPictureSignA,
+  tandooPictureSignB,
   personaPortrait,
   personaRole,
   personaEncounter,
   personaPortraitInteract,
+  personaPortraitInteractA,
+  personaPortraitInteractB,
   childPlay,
   childSchool,
   childGrowing,
   childPortraitAction,
+  childPortraitActionA,
+  childPortraitActionB,
   // 双子套专属
   morenaImgTrack,
+  morenaImgTrackA,
+  morenaImgTrackB,
   resilioMainAnimal,
 ];
 

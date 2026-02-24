@@ -26,21 +26,25 @@ interface Props {
 
 export default function CardDrawer({ spread, hideQuestions = false }: Props) {
   const availableDecks = DECKS.filter((d) => spread.deckSlugs.includes(d.slug));
+  const allPositionsHaveDeck = spread.positions.every((p) => p.deckSlug);
   const [selectedDeckSlug, setSelectedDeckSlug] = useState(
-    availableDecks.length > 0 ? availableDecks[0].slug : ""
+    allPositionsHaveDeck ? "" : availableDecks.length > 0 ? availableDecks[0].slug : ""
   );
   const defaultBack = getBackImage(availableDecks.length > 0 ? availableDecks[0].slug : "");
 
   const buildInitialCards = useCallback((deckSlug: string) => {
-    const subDecks = DECK_SUBDECKS[deckSlug] ?? [];
     return spread.positions.map((p) => {
+      const effectiveDeck = p.deckSlug ?? deckSlug;
+      const subDecks = DECK_SUBDECKS[effectiveDeck] ?? [];
       const sub = p.subDeckId ? subDecks.find((s) => s.id === p.subDeckId) : null;
-      const back = sub?.backImage ?? getBackImage(deckSlug);
+      const back = sub?.backImage ?? getBackImage(effectiveDeck);
       return { position: p.index, imageUrl: null, backImage: back, flipped: false };
     });
   }, [spread.positions]);
 
-  const [cards, setCards] = useState<DrawnCard[]>(() => buildInitialCards(availableDecks[0]?.slug ?? ""));
+  const [cards, setCards] = useState<DrawnCard[]>(() =>
+    buildInitialCards(allPositionsHaveDeck ? "" : availableDecks[0]?.slug ?? "")
+  );
   const [showQuestions, setShowQuestions] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const allFlipped = cards.every((c) => c.flipped);
@@ -50,21 +54,25 @@ export default function CardDrawer({ spread, hideQuestions = false }: Props) {
       if (cards[positionIndex].flipped) return;
 
       const position = spread.positions[positionIndex];
-      const drawnSoFar = cards.filter((c) => c.imageUrl).map((c) => c.imageUrl);
+      const effectiveDeck = position?.deckSlug ?? selectedDeckSlug;
+      const sameDeckPositions = spread.positions
+        .filter((p) => (p.deckSlug ?? selectedDeckSlug) === effectiveDeck)
+        .map((p) => p.index);
+      const drawnSoFar = cards
+        .filter((c) => sameDeckPositions.includes(c.position) && c.imageUrl)
+        .map((c) => c.imageUrl as string);
 
-      // 若该位置指定了 subDeckId，从对应子套抽；否则：多子套套系仅用第一个子套（图卡/主卡），不混用字卡等
-      const subDecks = DECK_SUBDECKS[selectedDeckSlug] ?? [];
+      const subDecks = DECK_SUBDECKS[effectiveDeck] ?? [];
       let pool: string[];
       if (position?.subDeckId) {
         const sub = subDecks.find((s) => s.id === position.subDeckId);
-        pool = sub ? sub.images : (DECK_CARD_IMAGES[selectedDeckSlug]?.cardImages ?? []);
+        pool = sub ? sub.images : (DECK_CARD_IMAGES[effectiveDeck]?.cardImages ?? []);
       } else if (subDecks.length > 1) {
-        // 经典 OH：仅图卡；morena：仅图像卡；tandoo：仅伴侣卡；persona/child：仅人像卡；resilio：仅复原主卡
         pool = subDecks[0].images;
       } else if (subDecks.length === 1) {
         pool = subDecks[0].images;
       } else {
-        pool = DECK_CARD_IMAGES[selectedDeckSlug]?.cardImages ?? [];
+        pool = DECK_CARD_IMAGES[effectiveDeck]?.cardImages ?? [];
       }
 
       const available = pool.filter((img) => !drawnSoFar.includes(img));
@@ -92,8 +100,8 @@ export default function CardDrawer({ spread, hideQuestions = false }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Deck selector */}
-      {availableDecks.length > 1 && (
+      {/* Deck selector：当所有卡位都指定了套系时不显示 */}
+      {availableDecks.length > 1 && !allPositionsHaveDeck && (
         <div>
           <label className="text-sm font-medium text-warm-600 mb-2 block">选择套系</label>
           <div className="flex flex-wrap gap-2">
