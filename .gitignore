@@ -8,6 +8,9 @@ web/.next/
 web/out/
 web/build
 
+# GitHub Pages 由 Actions 在云端构建，不提交
+docs/
+
 # env
 .env*
 !.env.example
