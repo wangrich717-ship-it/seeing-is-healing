@@ -136,6 +136,7 @@ export default function CustomSpreadPlayer({ spread, initialSnapshot }: Props) {
     const w = CARD_W * scale;
     const h = CARD_H * scale;
     const padding = 24;
+    const pr = 2;
     const minX = Math.min(...slots.map((s) => s.x * scale));
     const minY = Math.min(...slots.map((s) => s.y * scale));
     const maxX = Math.max(...slots.map((s) => s.x * scale + w));
@@ -143,20 +144,31 @@ export default function CustomSpreadPlayer({ spread, initialSnapshot }: Props) {
     const rect = canvasRef.current.getBoundingClientRect();
     const clipX = Math.max(0, minX - padding);
     const clipY = Math.max(0, minY - padding);
-    const clip = {
-      x: clipX,
-      y: clipY,
-      width: Math.min(rect.width - clipX, (maxX - minX) + 2 * padding),
-      height: Math.min(rect.height - clipY, (maxY - minY) + 2 * padding),
-    };
+    const clipW = Math.min(rect.width - clipX, (maxX - minX) + 2 * padding);
+    const clipH = Math.min(rect.height - clipY, (maxY - minY) + 2 * padding);
     try {
       const { toPng } = await import("html-to-image");
-      const dataUrl = await toPng(canvasRef.current, {
-        pixelRatio: 2,
+      const fullDataUrl = await toPng(canvasRef.current, {
+        pixelRatio: pr,
         backgroundColor: "#fefce8",
-        clip,
         skipFonts: true,
       });
+      const img = document.createElement("img");
+      img.crossOrigin = "anonymous";
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error("Image load failed"));
+        img.src = fullDataUrl;
+      });
+      const c = document.createElement("canvas");
+      c.width = clipW * pr;
+      c.height = clipH * pr;
+      const ctx = c.getContext("2d");
+      if (!ctx) throw new Error("Canvas 2d not available");
+      ctx.fillStyle = "#fefce8";
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, clipX * pr, clipY * pr, clipW * pr, clipH * pr, 0, 0, clipW * pr, clipH * pr);
+      const dataUrl = c.toDataURL("image/png");
       const a = document.createElement("a");
       a.href = dataUrl;
       a.download = `抽卡结果-${spread.name}-${Date.now()}.png`;
