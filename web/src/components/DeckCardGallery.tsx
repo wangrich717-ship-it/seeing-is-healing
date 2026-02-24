@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import Image from "next/image";
 import { SubDeck } from "@/data/subdecks";
+import { imageUrl } from "@/lib/imageUrl";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface DeckCardGalleryProps {
@@ -89,7 +90,7 @@ export default function DeckCardGallery({ subDecks }: DeckCardGalleryProps) {
               </div>
             ) : (
               <Image
-                src={src}
+                src={imageUrl(src)}
                 alt={`${current.label} ${idx + 1}`}
                 fill
                 sizes="(max-width:640px) 20vw,(max-width:768px) 12vw,10vw"
@@ -140,7 +141,7 @@ export default function DeckCardGallery({ subDecks }: DeckCardGalleryProps) {
               </div>
             ) : (
               <Image
-                src={images[lightboxIndex]}
+                src={imageUrl(images[lightboxIndex])}
                 alt={`${current.label} ${lightboxIndex + 1}`}
                 fill
                 sizes="80vw"

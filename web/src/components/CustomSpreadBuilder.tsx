@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
+import { imageUrl } from "@/lib/imageUrl";
 import { useRouter } from "next/navigation";
 import { Save, Settings2, GripVertical, Download, Pencil, PlusCircle, Trash2 } from "lucide-react";
 import { DECKS } from "@/data/decks";
@@ -289,7 +290,7 @@ export default function CustomSpreadBuilder({ initialSpread }: Props) {
               >
                 {backImage && backImage !== "/images/card-back-default.jpg" ? (
                   <Image
-                    src={backImage}
+                    src={imageUrl(backImage)}
                     alt="背面"
                     fill
                     className="object-cover"

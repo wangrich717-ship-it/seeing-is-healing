@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
+import { imageUrl } from "@/lib/imageUrl";
 
 interface Props {
   src: string;
@@ -23,7 +24,7 @@ export default function CardPreview({ src, alt, className }: Props) {
 
   return (
     <Image
-      src={src}
+      src={imageUrl(src)}
       alt={alt}
       fill
       className="object-cover"

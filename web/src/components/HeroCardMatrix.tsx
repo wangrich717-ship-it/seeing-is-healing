@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { imageUrl } from "@/lib/imageUrl";
 
 // 只使用 OH卡图卡
 const POOL = Array.from({ length: 88 }, (_, i) => `/images/decks/classic/cards/img/${i + 1}.jpg`);
@@ -29,7 +30,7 @@ function CardImg({ src }: { src: string }) {
   }
   return (
     <Image
-      src={src}
+      src={imageUrl(src)}
       alt="OH 卡"
       fill
       className="object-cover"

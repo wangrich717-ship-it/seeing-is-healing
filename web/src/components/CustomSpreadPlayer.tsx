@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
+import { imageUrl } from "@/lib/imageUrl";
 import Link from "next/link";
 import { RotateCcw, Download, BookMarked, Sparkles, Pencil } from "lucide-react";
 import { DECK_SUBDECKS } from "@/data/subdecks";
@@ -208,7 +209,7 @@ export default function CustomSpreadPlayer({ spread, initialSnapshot }: Props) {
             >
               {slot.flipped && slot.imageUrl ? (
                 <Image
-                  src={slot.imageUrl}
+                  src={imageUrl(slot.imageUrl)}
                   alt={`位置 ${slot.index + 1}`}
                   fill
                   className="object-cover"
@@ -219,7 +220,7 @@ export default function CustomSpreadPlayer({ spread, initialSnapshot }: Props) {
                 <>
                   {slot.backImage && slot.backImage !== "/images/card-back-default.jpg" ? (
                     <Image
-                      src={slot.backImage}
+                      src={imageUrl(slot.backImage)}
                       alt="背面"
                       fill
                       className="object-cover"
@@ -257,7 +258,7 @@ export default function CustomSpreadPlayer({ spread, initialSnapshot }: Props) {
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src={lightboxSrc}
+              src={imageUrl(lightboxSrc)}
               alt="放大"
               width={340}
               height={480}

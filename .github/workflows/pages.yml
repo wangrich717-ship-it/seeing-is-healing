@@ -37,6 +37,7 @@ jobs:
         working-directory: web
         env:
           GITHUB_PAGES: "true"
+          NEXT_PUBLIC_BASE_PATH: "/Seeing-is-Healing"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

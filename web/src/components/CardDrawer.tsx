@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import Image from "next/image";
+import { imageUrl } from "@/lib/imageUrl";
 import { motion, AnimatePresence } from "framer-motion";
 import { RotateCcw, ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import { Spread } from "@/data/spreads";
@@ -162,7 +163,7 @@ export default function CardDrawer({ spread, hideQuestions = false }: Props) {
                     <div className="w-full h-full rounded-xl overflow-hidden shadow-card-glow ring-2 ring-gold-300/50">
                       {card?.backImage && card.backImage !== "/images/card-back-default.jpg" ? (
                         <Image
-                          src={card.backImage}
+                          src={imageUrl(card.backImage)}
                           alt="卡牌背面"
                           fill
                           className="object-cover"
@@ -188,7 +189,7 @@ export default function CardDrawer({ spread, hideQuestions = false }: Props) {
                   <div className="card-back-face absolute inset-0">
                     <div className="w-full h-full rounded-xl overflow-hidden shadow-card-hover ring-2 ring-gold-400/60">
                       {card?.imageUrl ? (
-                        <CardImage src={card.imageUrl} alt={`位置${position.index + 1}`} />
+                        <CardImage src={imageUrl(card.imageUrl)} alt={`位置${position.index + 1}`} />
                       ) : (
                         <div className="w-full h-full bg-gradient-flame flex items-center justify-center">
                           <Sparkles className="text-white/50" size={24} />
@@ -241,7 +242,7 @@ export default function CardDrawer({ spread, hideQuestions = false }: Props) {
               onClick={(e) => e.stopPropagation()}
             >
               <Image
-                src={lightboxSrc}
+                src={imageUrl(lightboxSrc)}
                 alt="卡牌放大"
                 width={340}
                 height={480}
