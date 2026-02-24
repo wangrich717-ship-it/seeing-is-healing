@@ -115,7 +115,11 @@ export default function CustomSpreadPlayer({ spread, initialSnapshot }: Props) {
     if (!canvasRef.current) return;
     try {
       const { toPng } = await import("html-to-image");
-      const dataUrl = await toPng(canvasRef.current, { pixelRatio: 2, backgroundColor: "#fefce8" });
+      const dataUrl = await toPng(canvasRef.current, {
+        pixelRatio: 2,
+        backgroundColor: "#fefce8",
+        skipFonts: true,
+      });
       const a = document.createElement("a");
       a.href = dataUrl;
       a.download = `画布-${spread.name}-${Date.now()}.png`;
@@ -127,10 +131,32 @@ export default function CustomSpreadPlayer({ spread, initialSnapshot }: Props) {
   }, [spread.name]);
 
   const downloadDrawnResultAsImage = useCallback(async () => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || slots.length === 0) return;
+    const scale = spread.cardScale ?? 1;
+    const w = CARD_W * scale;
+    const h = CARD_H * scale;
+    const padding = 24;
+    const minX = Math.min(...slots.map((s) => s.x * scale));
+    const minY = Math.min(...slots.map((s) => s.y * scale));
+    const maxX = Math.max(...slots.map((s) => s.x * scale + w));
+    const maxY = Math.max(...slots.map((s) => s.y * scale + h));
+    const rect = canvasRef.current.getBoundingClientRect();
+    const clipX = Math.max(0, minX - padding);
+    const clipY = Math.max(0, minY - padding);
+    const clip = {
+      x: clipX,
+      y: clipY,
+      width: Math.min(rect.width - clipX, (maxX - minX) + 2 * padding),
+      height: Math.min(rect.height - clipY, (maxY - minY) + 2 * padding),
+    };
     try {
       const { toPng } = await import("html-to-image");
-      const dataUrl = await toPng(canvasRef.current, { pixelRatio: 2, backgroundColor: "#fefce8" });
+      const dataUrl = await toPng(canvasRef.current, {
+        pixelRatio: 2,
+        backgroundColor: "#fefce8",
+        clip,
+        skipFonts: true,
+      });
       const a = document.createElement("a");
       a.href = dataUrl;
       a.download = `抽卡结果-${spread.name}-${Date.now()}.png`;
@@ -139,8 +165,11 @@ export default function CustomSpreadPlayer({ spread, initialSnapshot }: Props) {
       console.error(e);
       alert("下载失败，请稍后重试");
     }
-  }, [spread.name]);
+  }, [spread.name, spread.cardScale, slots]);
 
+  const cardScale = spread.cardScale ?? 1;
+  const cardW = CARD_W * cardScale;
+  const cardH = CARD_H * cardScale;
   const hasDrawnCards = slots.some((s) => s.imageUrl);
 
   return (
@@ -194,17 +223,18 @@ export default function CustomSpreadPlayer({ spread, initialSnapshot }: Props) {
             key={slot.index}
             className="absolute flex flex-col items-center gap-1 select-none"
             style={{
-              left: slot.x,
-              top: slot.y,
-              width: Math.max(CARD_W, 120),
+              left: slot.x * cardScale,
+              top: slot.y * cardScale,
+              width: Math.max(cardW, 120),
               zIndex: 10,
             }}
           >
             <div
               className={cn(
-                "relative w-[88px] h-[124px] rounded-xl overflow-hidden shadow-lg border-2 cursor-pointer transition-transform hover:scale-[1.02]",
+                "relative rounded-xl overflow-hidden shadow-lg border-2 cursor-pointer transition-transform hover:scale-[1.02]",
                 slot.flipped ? "border-gold-400" : "border-gold-200"
               )}
+              style={{ width: cardW, height: cardH }}
               onClick={() => drawCard(slot.index)}
             >
               {slot.flipped && slot.imageUrl ? (

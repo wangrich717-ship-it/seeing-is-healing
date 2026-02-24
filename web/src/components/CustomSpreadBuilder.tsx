@@ -39,7 +39,7 @@ export default function CustomSpreadBuilder({ initialSpread }: Props) {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [slotMenuIndex, setSlotMenuIndex] = useState<number | null>(null);
   const [editingMeaningIndex, setEditingMeaningIndex] = useState<number | null>(null);
-  const [canvasScale, setCanvasScale] = useState(1);
+  const [canvasScale, setCanvasScale] = useState(initialSpread?.cardScale ?? 1);
 
   const goToCanvas = useCallback(() => {
     if (!name.trim()) return;
@@ -104,9 +104,9 @@ export default function CustomSpreadBuilder({ initialSpread }: Props) {
 
   const handleSave = useCallback(() => {
     if (!spread) return;
-    saveCustomSpread(spread);
+    saveCustomSpread({ ...spread, cardScale: canvasScale });
     router.push(`/spreads/custom/play?id=${encodeURIComponent(spread.id)}`);
-  }, [spread, router]);
+  }, [spread, canvasScale, router]);
 
   const handleDownloadCode = useCallback(() => {
     if (!spread) return;
@@ -212,7 +212,7 @@ export default function CustomSpreadBuilder({ initialSpread }: Props) {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-warm-500">整体缩放</span>
-          {[0.8, 1, 1.2].map((s) => (
+          {[0.8, 1, 1.2, 1.5, 2].map((s) => (
             <button
               key={s}
               type="button"

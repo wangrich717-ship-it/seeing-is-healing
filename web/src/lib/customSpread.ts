@@ -16,6 +16,8 @@ export interface CustomSpread {
   name: string;
   createdAt: number;
   positions: CustomSpreadPosition[];
+  /** 卡牌显示比例，如 1、1.2、1.5、2 */
+  cardScale?: number;
 }
 
 /** 画布 + 抽卡结果快照（用于「保存画布及抽到的卡牌」） */
@@ -72,7 +74,7 @@ export function createNewCustomSpread(name: string, positionCount: number): Cust
     x: 120 + (i % 4) * 120,
     y: 100 + Math.floor(i / 4) * 160,
   }));
-  return { id, name, createdAt: Date.now(), positions };
+  return { id, name, createdAt: Date.now(), positions, cardScale: 1 };
 }
 
 export function getSnapshot(spreadId: string): CustomSpreadSnapshot | null {
@@ -109,6 +111,7 @@ export function importSpreadFromCode(json: string): CustomSpread | null {
       id: genId(),
       name: parsed.name ?? "导入的牌阵",
       createdAt: Date.now(),
+      cardScale: typeof (parsed as CustomSpread).cardScale === "number" ? (parsed as CustomSpread).cardScale : 1,
       positions: (parsed.positions ?? []).map((p: CustomSpreadPosition, i: number) => ({
         index: i,
         meaning: p.meaning ?? `位置 ${i + 1}`,
