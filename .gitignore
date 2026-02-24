@@ -1,0 +1,31 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# Next.js (web)
+web/.next/
+web/out/
+web/build
+
+# env
+.env*
+!.env.example
+
+# 根目录大文件，不纳入仓库（避免推送超时）
+*.pdf
+*.pptx
+
+# misc
+.DS_Store
+*.pem
+*.tsbuildinfo
+next-env.d.ts
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# vercel
+.vercel
