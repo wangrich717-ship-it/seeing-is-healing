@@ -130,6 +130,9 @@ export default function CustomSpreadPlayer({ spread, initialSnapshot }: Props) {
     }
   }, [spread.name]);
 
+  /** 卡牌下方标签区域高度（序号圆点 + 位置说明文字），避免下载时被截掉 */
+  const CARD_LABEL_HEIGHT = 44;
+
   const downloadDrawnResultAsImage = useCallback(async () => {
     if (!canvasRef.current || slots.length === 0) return;
     const scale = spread.cardScale ?? 1;
@@ -140,7 +143,7 @@ export default function CustomSpreadPlayer({ spread, initialSnapshot }: Props) {
     const minX = Math.min(...slots.map((s) => s.x * scale));
     const minY = Math.min(...slots.map((s) => s.y * scale));
     const maxX = Math.max(...slots.map((s) => s.x * scale + w));
-    const maxY = Math.max(...slots.map((s) => s.y * scale + h));
+    const maxY = Math.max(...slots.map((s) => s.y * scale + h + CARD_LABEL_HEIGHT));
     const rect = canvasRef.current.getBoundingClientRect();
     const clipX = Math.max(0, minX - padding);
     const clipY = Math.max(0, minY - padding);
