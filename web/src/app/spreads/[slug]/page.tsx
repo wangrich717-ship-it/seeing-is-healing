@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ChevronRight, Sparkles } from "lucide-react";
 import { SPREADS, getSpreadBySlug } from "@/data/spreads";
 import CardDrawer from "@/components/CardDrawer";
+import QuestionsPanel from "@/components/QuestionsPanel";
 import { CONTENT_CLASS } from "@/lib/site";
 
 export async function generateStaticParams() {
@@ -60,33 +61,19 @@ export default async function SpreadDetailPage({ params }: Props) {
 
       <div className={`${CONTENT_CLASS} py-8 space-y-6`}>
 
-        {/* 抽卡 + 引导问题 8:2 */}
-        <div className="flex gap-5 items-start">
-          {/* 抽卡探索 80% */}
-          <div className="flex-[4] min-w-0 bg-white rounded-2xl border border-cream-200 shadow-sm p-6 md:p-8">
+        {/* 抽卡 + 引导问题：小屏纵向+抽屉，大屏 8:2 侧栏 */}
+        <div className="flex flex-col lg:flex-row gap-5 items-start">
+          {/* 抽卡探索 */}
+          <div className="flex-[4] min-w-0 w-full bg-white rounded-2xl border border-cream-200 shadow-sm p-6 md:p-8">
             <h2 className="text-xl font-serif font-semibold text-warm-800 mb-6 text-center">
               抽卡探索
             </h2>
             <CardDrawer spread={spread} hideQuestions />
           </div>
 
-          {/* 引导问题 20% */}
-          <div className="flex-1 min-w-0 bg-white rounded-2xl border border-cream-200 shadow-sm p-5 sticky top-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles size={14} className="text-gold-500" />
-              <h3 className="text-sm font-semibold text-warm-700">引导问题</h3>
-              <span className="text-xs text-warm-400">({spread.recommendedQuestions.length})</span>
-            </div>
-            <ol className="space-y-3">
-              {spread.recommendedQuestions.map((q, i) => (
-                <li key={i} className="flex gap-2.5">
-                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-gradient-flame text-white text-[10px] font-bold flex items-center justify-center mt-0.5">
-                    {i + 1}
-                  </span>
-                  <p className="text-warm-600 text-sm leading-relaxed">{q}</p>
-                </li>
-              ))}
-            </ol>
+          {/* 引导问题：大屏固定侧栏，小屏为触发按钮 + 侧边抽屉 */}
+          <div className="w-full lg:w-auto lg:flex-1 lg:min-w-0 flex flex-col items-end lg:items-stretch">
+            <QuestionsPanel questions={spread.recommendedQuestions} />
           </div>
         </div>
 

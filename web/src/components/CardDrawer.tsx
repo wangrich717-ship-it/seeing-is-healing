@@ -104,7 +104,8 @@ export default function CardDrawer({ spread, hideQuestions = false }: Props) {
       {availableDecks.length > 1 && !allPositionsHaveDeck && (
         <div>
           <label className="text-sm font-medium text-warm-600 mb-2 block">选择套系</label>
-          <div className="flex flex-wrap gap-2">
+          {/* 小屏单行横向滚动，大屏多行换行 */}
+          <div className="flex gap-2 overflow-x-auto pb-2 flex-nowrap lg:flex-wrap lg:overflow-visible">
             {availableDecks.map((deck) => (
               <button
                 key={deck.slug}
@@ -114,7 +115,7 @@ export default function CardDrawer({ spread, hideQuestions = false }: Props) {
                   setShowQuestions(false);
                 }}
                 className={cn(
-                  "text-sm px-3 py-1.5 rounded-lg border transition-all",
+                  "text-sm px-3 py-1.5 rounded-lg border transition-all flex-shrink-0",
                   selectedDeckSlug === deck.slug
                     ? "bg-gradient-flame text-white border-transparent shadow-sm"
                     : "bg-white text-warm-600 border-warm-200 hover:border-flame-300"
