@@ -1,0 +1,118 @@
+name: Desktop Build (Windows + macOS)
+
+# 仅手动触发或推送 desktop-v* 标签时构建。不影响 GitHub Pages 部署。
+on:
+  workflow_dispatch:
+    inputs:
+      create_release:
+        description: '同时创建 GitHub Release 草稿'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+  push:
+    tags:
+      - 'desktop-v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-latest
+            label: windows
+            args: ''
+          - platform: macos-latest
+            label: macos
+            args: '--target universal-apple-darwin'
+
+    runs-on: ${{ matrix.platform }}
+    name: Build (${{ matrix.label }})
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: |
+            web/package-lock.json
+            desktop/package-lock.json
+
+      - name: Setup Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './desktop/src-tauri -> target'
+          key: ${{ matrix.label }}
+
+      - name: Install web dependencies
+        working-directory: web
+        run: npm ci
+
+      # 注意：不设置 GITHUB_PAGES 环境变量，让 basePath 为空，
+      # 这样桌面端打开本地 file:// 资源时路径才正确。
+      - name: Build web (static export)
+        working-directory: web
+        run: npm run build
+
+      - name: Install desktop dependencies
+        working-directory: desktop
+        run: npm ci
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: desktop
+          args: ${{ matrix.args }}
+          tagName: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
+          releaseName: ${{ startsWith(github.ref, 'refs/tags/') && format('OH 卡知识库 桌面版 {0}', github.ref_name) || '' }}
+          releaseBody: |
+            ## OH 卡知识库 · 桌面版
+
+            - Windows 用户下载 `.msi` 或 `-setup.exe`，双击安装。
+            - macOS 用户下载 `.dmg`，拖入"应用程序"文件夹。
+              首次打开如提示"无法验证开发者"，右键点击图标 → 选择"打开"即可。
+          releaseDraft: ${{ startsWith(github.ref, 'refs/tags/') }}
+          prerelease: false
+
+      # 手动触发（无标签）时，把产物作为 workflow artifact 上传，
+      # 你可以在 Actions 页面下载，不会创建 Release。
+      - name: Upload Windows artifacts
+        if: matrix.platform == 'windows-latest' && !startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-windows
+          path: |
+            desktop/src-tauri/target/release/bundle/msi/*.msi
+            desktop/src-tauri/target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload macOS artifacts
+        if: matrix.platform == 'macos-latest' && !startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-macos
+          path: |
+            desktop/src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+            desktop/src-tauri/target/universal-apple-darwin/release/bundle/macos/*.app.tar.gz
+          if-no-files-found: error
+          retention-days: 14
