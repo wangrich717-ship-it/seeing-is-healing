@@ -1,0 +1,14 @@
+{
+  "name": "seeing-is-healing-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Seeing-is-Healing · OH 卡知识库 桌面客户端",
+  "scripts": {
+    "tauri": "tauri",
+    "build": "tauri build",
+    "icon": "tauri icon src-tauri/icons/icon.png"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}
