@@ -3,15 +3,6 @@ name: Desktop Build (Windows + macOS)
 # 仅手动触发或推送 desktop-v* 标签时构建。不影响 GitHub Pages 部署。
 on:
   workflow_dispatch:
-    inputs:
-      create_release:
-        description: '同时创建 GitHub Release 草稿'
-        required: false
-        default: 'true'
-        type: choice
-        options:
-          - 'true'
-          - 'false'
   push:
     tags:
       - 'desktop-v*'
@@ -27,10 +18,8 @@ jobs:
         include:
           - platform: windows-latest
             label: windows
-            args: ''
           - platform: macos-latest
             label: macos
-            args: ''
 
     runs-on: ${{ matrix.platform }}
     name: Build (${{ matrix.label }})
@@ -50,21 +39,12 @@ jobs:
             web/package-lock.json
             desktop/package-lock.json
 
-      - name: Setup Rust (stable)
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './desktop/src-tauri -> target'
-          key: ${{ matrix.label }}
-
       - name: Install web dependencies
         working-directory: web
         run: npm ci
 
       # 注意：不设置 GITHUB_PAGES 环境变量，让 basePath 为空，
-      # 这样桌面端打开本地 file:// 资源时路径才正确。
+      # 桌面端通过本地 HTTP server 提供静态文件，路径必须是根路径。
       - name: Build web (static export)
         working-directory: web
         run: npm run build
@@ -73,44 +53,32 @@ jobs:
         working-directory: desktop
         run: npm ci
 
-      - name: Build Tauri app
-        uses: tauri-apps/tauri-action@v0
+      - name: Build Electron app
+        working-directory: desktop
+        run: npm run build
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          projectPath: desktop
-          args: ${{ matrix.args }}
-          tagName: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
-          releaseName: ${{ startsWith(github.ref, 'refs/tags/') && format('OH 卡知识库 桌面版 {0}', github.ref_name) || '' }}
-          releaseBody: |
-            ## OH 卡知识库 · 桌面版
+          # electron-builder 默认会尝试发布到 GitHub Release，
+          # 我们在这里禁用，避免误发。手动触发时只产 artifact。
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - Windows 用户下载 `.msi` 或 `-setup.exe`，双击安装。
-            - macOS 用户下载 `.dmg`，拖入"应用程序"文件夹。
-              首次打开如提示"无法验证开发者"，右键点击图标 → 选择"打开"即可。
-          releaseDraft: ${{ startsWith(github.ref, 'refs/tags/') }}
-          prerelease: false
-
-      # 手动触发（无标签）时，把产物作为 workflow artifact 上传，
-      # 你可以在 Actions 页面下载，不会创建 Release。
       - name: Upload Windows artifacts
-        if: matrix.platform == 'windows-latest' && !startsWith(github.ref, 'refs/tags/')
+        if: matrix.platform == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: desktop-windows
           path: |
-            desktop/src-tauri/target/release/bundle/msi/*.msi
-            desktop/src-tauri/target/release/bundle/nsis/*-setup.exe
+            desktop/dist/*.exe
+            desktop/dist/*.msi
           if-no-files-found: error
           retention-days: 14
 
       - name: Upload macOS artifacts
-        if: matrix.platform == 'macos-latest' && !startsWith(github.ref, 'refs/tags/')
+        if: matrix.platform == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
           name: desktop-macos
           path: |
-            desktop/src-tauri/target/release/bundle/dmg/*.dmg
-            desktop/src-tauri/target/release/bundle/macos/*.app.tar.gz
+            desktop/dist/*.dmg
+            desktop/dist/*.zip
           if-no-files-found: error
           retention-days: 14
