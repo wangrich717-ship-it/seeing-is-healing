@@ -28,7 +28,7 @@ git push origin desktop-v0.1.0
 ### 产物
 
 - Windows：`*.msi` 和 `*-setup.exe`（NSIS）
-- macOS：`*.dmg`（universal binary，Intel + Apple Silicon 都能跑）
+- macOS：`*.dmg`（Apple Silicon 原生，M1/M2/M3 等芯片）
 
 ## 本地开发模式
 
