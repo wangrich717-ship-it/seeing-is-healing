@@ -30,7 +30,7 @@ jobs:
             args: ''
           - platform: macos-latest
             label: macos
-            args: '--target universal-apple-darwin'
+            args: ''
 
     runs-on: ${{ matrix.platform }}
     name: Build (${{ matrix.label }})
@@ -52,8 +52,6 @@ jobs:
 
       - name: Setup Rust (stable)
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -112,7 +110,7 @@ jobs:
         with:
           name: desktop-macos
           path: |
-            desktop/src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
-            desktop/src-tauri/target/universal-apple-darwin/release/bundle/macos/*.app.tar.gz
+            desktop/src-tauri/target/release/bundle/dmg/*.dmg
+            desktop/src-tauri/target/release/bundle/macos/*.app.tar.gz
           if-no-files-found: error
           retention-days: 14
