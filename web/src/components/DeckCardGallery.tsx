@@ -10,13 +10,25 @@ interface DeckCardGalleryProps {
   subDecks: SubDeck[];
 }
 
+const INITIAL_VISIBLE_COUNT = 30;
+const LOAD_MORE_COUNT = 30;
+
 export default function DeckCardGallery({ subDecks }: DeckCardGalleryProps) {
   const [activeSubDeck, setActiveSubDeck] = useState(0);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
 
   const current = subDecks[activeSubDeck];
   const images = current.images;
+  const visibleImages = images.slice(0, visibleCount);
+  const hasMoreImages = visibleImages.length < images.length;
+
+  const switchSubDeck = useCallback((index: number) => {
+    setActiveSubDeck(index);
+    setLightboxIndex(null);
+    setVisibleCount(INITIAL_VISIBLE_COUNT);
+  }, []);
 
   const openLightbox = useCallback((index: number) => {
     setLightboxIndex(index);
@@ -47,6 +59,10 @@ export default function DeckCardGallery({ subDecks }: DeckCardGalleryProps) {
     setFailedImages((prev) => new Set(prev).add(src));
   }, []);
 
+  const loadMore = useCallback(() => {
+    setVisibleCount((count) => Math.min(count + LOAD_MORE_COUNT, images.length));
+  }, [images.length]);
+
   return (
     <div className="w-full">
       {/* 二级胶囊切换：仅多子套时显示 */}
@@ -55,7 +71,7 @@ export default function DeckCardGallery({ subDecks }: DeckCardGalleryProps) {
           {subDecks.map((sd, idx) => (
             <button
               key={sd.id}
-              onClick={() => setActiveSubDeck(idx)}
+              onClick={() => switchSubDeck(idx)}
               className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${
                 idx === activeSubDeck
                   ? "bg-gradient-to-r from-flame-500 to-gold-500 text-white shadow-sm"
@@ -73,12 +89,13 @@ export default function DeckCardGallery({ subDecks }: DeckCardGalleryProps) {
 
       {/* 卡牌数量说明 */}
       <p className="text-xs text-gray-400 mb-4">
-        共 <span className="font-semibold text-flame-500">{images.length}</span> 张，点击可放大查看
+        共 <span className="font-semibold text-flame-500">{images.length}</span> 张，
+        已显示 <span className="font-semibold text-flame-500">{visibleImages.length}</span> 张，点击可放大查看
       </p>
 
       {/* 10 列网格 */}
       <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2">
-        {images.map((src, idx) => (
+        {visibleImages.map((src, idx) => (
           <button
             key={`${current.id}-${idx}`}
             onClick={() => openLightbox(idx)}
@@ -102,6 +119,17 @@ export default function DeckCardGallery({ subDecks }: DeckCardGalleryProps) {
           </button>
         ))}
       </div>
+
+      {hasMoreImages && (
+        <div className="mt-5 flex justify-center">
+          <button
+            onClick={loadMore}
+            className="rounded-lg border border-cream-200 bg-cream-50 px-4 py-2 text-sm font-medium text-warm-600 transition-colors hover:border-flame-200 hover:bg-flame-50 hover:text-flame-600"
+          >
+            加载更多（剩余 {images.length - visibleImages.length} 张）
+          </button>
+        </div>
+      )}
 
       {/* 灯箱 */}
       {lightboxIndex !== null && (
